@@ -1,5 +1,7 @@
 package com.glodyfimpa.awesome_pizza.controller;
 
+import com.glodyfimpa.awesome_pizza.dto.OrderDto;
+import com.glodyfimpa.awesome_pizza.dto.request.OrderRequest;
 import com.glodyfimpa.awesome_pizza.model.Order;
 import com.glodyfimpa.awesome_pizza.model.OrderStatus;
 import com.glodyfimpa.awesome_pizza.service.OrderService;
@@ -26,13 +28,13 @@ public class OrderController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Order created",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Order.class))}),
+                            schema = @Schema(implementation = OrderDto.class))}),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content)
     })
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
-        Order newOrder = orderService.createOrder(order);
+    public ResponseEntity<OrderDto> createOrder(@RequestBody OrderRequest orderRequest) {
+        OrderDto newOrder = orderService.createOrder(orderRequest);
         return new ResponseEntity<>(newOrder, HttpStatus.CREATED);
     }
 
@@ -40,10 +42,10 @@ public class OrderController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found orders",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Order.class))})
+                            schema = @Schema(implementation = OrderDto.class))})
     })
     @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
+    public ResponseEntity<List<OrderDto>> getAllOrders() {
         return new ResponseEntity<>(orderService.getAllOrders(), HttpStatus.OK);
     }
 
@@ -56,7 +58,7 @@ public class OrderController {
                     content = @Content)
     })
     @GetMapping("/{orderId}")
-    public ResponseEntity<Order> getOrderById(@PathVariable String orderId) {
+    public ResponseEntity<OrderDto> getOrderById(@PathVariable String orderId) {
         return orderService.getOrderById(orderId)
                 .map(order -> new ResponseEntity<>(order, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -66,7 +68,7 @@ public class OrderController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Order status updated",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Order.class))}),
+                            schema = @Schema(implementation = OrderDto.class))}),
             @ApiResponse(responseCode = "404", description = "Order not found",
                     content = @Content)
     })

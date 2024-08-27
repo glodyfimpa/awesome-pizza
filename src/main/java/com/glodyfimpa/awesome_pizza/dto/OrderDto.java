@@ -1,5 +1,6 @@
-package com.glodyfimpa.awesome_pizza.model;
+package com.glodyfimpa.awesome_pizza.dto;
 
+import com.glodyfimpa.awesome_pizza.model.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,15 +14,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Order implements Serializable {
+public class OrderDto implements Serializable {
 
-    private static final long serialVersionUID = -2698066248796658868L;
+    private static final long serialVersionUID = -1825735303263939994L;
 
     private String orderId;
     private String client;
     private String address;
-    private List<Pizza> pizze = new ArrayList<>();
+    private List<PizzaDto> pizze = new ArrayList<>();
     private OrderStatus status;
 
 }
-

@@ -1,4 +1,4 @@
-package com.glodyfimpa.awesome_pizza.model;
+package com.glodyfimpa.awesome_pizza.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +11,9 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Pizza implements Serializable {
+public class PizzaDto implements Serializable {
 
-    private static final long serialVersionUID = 4088481569943005111L;
+    private static final long serialVersionUID = -1079096536213015519L;
 
     private String name;
     private int quantity;

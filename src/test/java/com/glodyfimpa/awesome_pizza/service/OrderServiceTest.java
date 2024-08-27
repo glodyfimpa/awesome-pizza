@@ -1,5 +1,8 @@
 package com.glodyfimpa.awesome_pizza.service;
 
+import com.glodyfimpa.awesome_pizza.dto.OrderDto;
+import com.glodyfimpa.awesome_pizza.dto.request.OrderRequest;
+import com.glodyfimpa.awesome_pizza.mapper.OrderMapper;
 import com.glodyfimpa.awesome_pizza.model.Order;
 import com.glodyfimpa.awesome_pizza.model.OrderStatus;
 import com.glodyfimpa.awesome_pizza.repository.OrderRepository;
@@ -22,8 +25,13 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
 
+    private static final String CLIENT_NAME = "Glody Fimpa";
+
     @Mock
     private OrderRepository orderRepository;
+
+    @Mock
+    private OrderMapper orderMapper;
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -31,16 +39,30 @@ class OrderServiceTest {
     @Test
     void createOrderTest() {
 
+        String orderId = UUID.randomUUID().toString();
+
+        OrderRequest orderRequest = new OrderRequest();
+        orderRequest.setClient(CLIENT_NAME);
+
         Order order = new Order();
-        order.setClient("Glody Fimpa");
+        order.setClient(CLIENT_NAME);
+
+        OrderDto orderDto = new OrderDto();
+        orderDto.setClient(CLIENT_NAME);
+
+        when(orderMapper.requestDtoToEntity(any(OrderRequest.class))).thenReturn(order);
 
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> {
             Order savedOrder = invocation.getArgument(0);
-            savedOrder.setOrderId(UUID.randomUUID().toString());
+            savedOrder.setOrderId(orderId);
             return savedOrder;
         });
 
-        Order createdOrder = orderService.createOrder(order);
+        orderDto.setOrderId(orderId);
+        orderDto.setStatus(OrderStatus.IN_CODA);
+        when(orderMapper.entityToDto(any(Order.class))).thenReturn(orderDto);
+
+        OrderDto createdOrder = orderService.createOrder(orderRequest);
 
         assertThat(createdOrder.getStatus()).isEqualTo(OrderStatus.IN_CODA);
         assertTrue(createdOrder.getOrderId() != null && !createdOrder.getOrderId().isEmpty());
@@ -50,29 +72,42 @@ class OrderServiceTest {
     @Test
     void getAllOrdersTest() {
 
-        List<Order> ordersExpected = getOrders();
+        List<Order> orders = getOrders();
+        List<OrderDto> ordersDto = getOrdersDto();
 
-        when(orderRepository.findAll()).thenReturn(ordersExpected);
+        when(orderRepository.findAll()).thenReturn(orders);
 
-        List<Order> orders = orderService.getAllOrders();
+        when(orderMapper.entitiesToDtos(anyList())).thenReturn(ordersDto);
 
-        assertThat(orders).isNotEmpty().isEqualTo(ordersExpected);
+        List<OrderDto> getAllOrders = orderService.getAllOrders();
+
+        assertThat(getAllOrders).isNotEmpty().isEqualTo(ordersDto);
     }
 
     @Test
     void getOrderByIdTest() {
 
+        String orderId = "1";
+
         Order order =
                 Order.builder()
-                        .orderId("1")
+                        .orderId(orderId)
+                        .status(OrderStatus.IN_PREPARAZIONE)
+                        .build();
+
+        OrderDto orderDto =
+                OrderDto.builder()
+                        .orderId(orderId)
                         .status(OrderStatus.IN_PREPARAZIONE)
                         .build();
 
         when(orderRepository.findById(anyString())).thenReturn(Optional.of(order));
 
-        Optional<Order> orderOptional = orderService.getOrderById("1");
+        when(orderMapper.entityToDto(any(Order.class))).thenReturn(orderDto);
 
-        assertThat(orderOptional).isPresent().contains(order);
+        Optional<OrderDto> orderOptional = orderService.getOrderById(orderId);
+
+        assertThat(orderOptional).isPresent().contains(orderDto);
     }
 
     @Test
@@ -107,6 +142,35 @@ class OrderServiceTest {
 
         Order orderConsegnato =
                 Order.builder()
+                        .orderId(UUID.randomUUID().toString())
+                        .status(OrderStatus.CONSEGNATO)
+                        .build();
+
+        return List.of(orderInCoda, orderInPreparazione, orderPronto, orderConsegnato);
+    }
+
+    private List<OrderDto> getOrdersDto() {
+
+        OrderDto orderInCoda =
+                OrderDto.builder()
+                        .orderId(UUID.randomUUID().toString())
+                        .status(OrderStatus.IN_CODA)
+                        .build();
+
+        OrderDto orderInPreparazione =
+                OrderDto.builder()
+                        .orderId(UUID.randomUUID().toString())
+                        .status(OrderStatus.IN_PREPARAZIONE)
+                        .build();
+
+        OrderDto orderPronto =
+                OrderDto.builder()
+                        .orderId(UUID.randomUUID().toString())
+                        .status(OrderStatus.PRONTO)
+                        .build();
+
+        OrderDto orderConsegnato =
+                OrderDto.builder()
                         .orderId(UUID.randomUUID().toString())
                         .status(OrderStatus.CONSEGNATO)
                         .build();

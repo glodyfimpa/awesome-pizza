@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: awesome-pizza
+
+server:
+  servlet:
+    context-path: /AWESOME_PIZZA
+  shutdown: graceful
+  port: '8080'

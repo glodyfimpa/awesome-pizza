@@ -17,7 +17,7 @@ public class Order {
     private String orderId;
     private String client;
     private String address;
-    private List<Pizza> pizzas = new ArrayList<>();
+    private List<Pizza> pizze = new ArrayList<>();
     private OrderStatus status;
 
 }

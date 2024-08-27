@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.glodyfimpa</groupId>
     <artifactId>awesome-pizza</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <name>awesome-pizza</name>
     <description>&quot;Awesome Pizza&quot; ---- Portale per gestire gli ordini verso la pizzeria</description>
     <url/>
